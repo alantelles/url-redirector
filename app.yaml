@@ -1,6 +1,6 @@
 runtime: python38
 env: standard
-entrypoint: gunicorn -b 0.0.0.0:$PORT -w 6 wsgi:app
+entrypoint: gunicorn -b 0.0.0.0:$PORT -w 4 wsgi:app --timeout 120
 
 runtime_config:
   python_version: 3
