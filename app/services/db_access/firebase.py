@@ -44,13 +44,14 @@ class FireBaseDbAccess(DbAccess):
         return short_test
 
     
+    
     def check_short_url(self, short_url):
         
         urls_ref = self.db.collection('short_urls').where('short_url', '==', short_url).stream()
         first = next(urls_ref, None)
         if first:
             to_dict = first.to_dict()
-            return to_dict['complete_url']
+            return to_dict
         
 
 

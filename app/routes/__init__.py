@@ -12,9 +12,9 @@ def index():
 
 @app.route('/<url>', methods=["GET"])
 def redirect_to_complete_url(url):
-    complete_url = shortener.check_short_url(url)
-    if complete_url:
-        return redirect(complete_url, code=301)
+    url_dict = shortener.check_short_url(url)
+    if url_dict:        
+        return redirect(url_dict["complete_url"], code=301)
 
     return redirect(f"{front}check?short={url}", code=301)
 
