@@ -4,59 +4,25 @@ from werkzeug.exceptions import NotFound
 
 import app.helpers.templates as tp
 import app.services.shortener as shortener
-from app import app
+from app import app, front
 
 @app.route('/', methods=["GET"])
 def index():
-    context = {'base_template': tp.get_layout_path('base')}
-    return tp.get_page('index', context)
+    return redirect(front)
 
-@app.route('/check', methods=["GET"])
-def new_short_url():
-    context = {
-        'base_template': tp.get_layout_path('base')
-    }
-    url = request.args.get('short')
-    if url:
-        context['short'] = url
-        valid_url =  shortener.check_short_url(url)
-        if valid_url:
-            context['destination'] = valid_url
-            return tp.get_page('result', context)
+@app.route('/<url>', methods=["GET"])
+def redirect_to_complete_url(url):
+    complete_url = shortener.check_short_url(url)
+    if complete_url:
+        return redirect(complete_url, code=301)
 
-        return tp.get_page('url_not_found', context)
-    context['header'] = "Requisição inválida"
-    context['message'] = "Não foi enviada uma URL para validação"
-    context['code'] = 400
-    return tp.get_page('error', context)
-    
-
-@app.route('/new', methods=["POST"])
-def save_short_url():
-    url = request.form.get('complete_url')
-    short_url = shortener.save_new_url(url)
-
-    if short_url:
-        return redirect(url_for('new_short_url', short=short_url))
-
+    return redirect(f"{front}check?short={url}", code=301)
 
 @app.errorhandler(NotFound)
 def handle_not_found_exception(e):
-    context = {
-        'base_template': tp.get_layout_path('base'),
-        'header': "Página não encontrada",
-        'message': "A página requisitada não existe neste site",
-        'code': 404
-    }
-    return tp.get_page('error', context)
+    return redirect(f"{front}errors?type=page_not_found")
 
 @app.errorhandler(Exception)
 def handle_not_found_exception(e):
-    traceback.print_exc()
-    context = {
-        'base_template': tp.get_layout_path('base'),
-        'header': "Erro!",
-        'message': "Algum erro ocorreu. Estamos trabalhando para corrigir o problema.",
-        'code': 500
-    }
-    return tp.get_page('error', context)
+    traceback.print_exc()    
+    return redirect(f"{front}errors")

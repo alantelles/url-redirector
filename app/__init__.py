@@ -19,7 +19,7 @@ else:
     db = DummyDbAccess()
 
 
-
+front = os.environ.get("FRONTEND_PATH")
 app = Flask(__name__)
 app.config['DOMAIN'] = os.environ.get('DOMAIN', 'http://encur.te/')
 from app.routes import *
