@@ -1,5 +1,5 @@
 import traceback
-from flask import render_template, request, redirect, url_for
+from flask import redirect
 from werkzeug.exceptions import NotFound
 
 import app.helpers.templates as tp
