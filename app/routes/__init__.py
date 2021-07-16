@@ -1,5 +1,6 @@
+import threading
 import traceback
-from flask import redirect
+from flask import redirect, request
 from werkzeug.exceptions import NotFound
 
 import app.helpers.templates as tp
@@ -13,7 +14,9 @@ def index():
 @app.route('/<url>', methods=["GET"])
 def redirect_to_complete_url(url):
     url_dict = shortener.check_short_url(url)
-    if url_dict:        
+    if url_dict:
+        send_to_queue_async = threading.Thread(target=shortener.save_new_access, args=(request.headers, url_dict))
+        send_to_queue_async.start()
         return redirect(url_dict["complete_url"], code=301)
 
     return redirect(f"{front}check?short={url}", code=301)
